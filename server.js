@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const products = require('./api/routes/products.js');
+const comments = require('./api/routes/comments.js');
 
 const app = express();
 
@@ -34,6 +35,7 @@ mongoose
 
 // API Routes
 app.use('/products', products);
+app.use('/comments', comments);
 
 // Error Handling
 app.use((req, res, next) => {

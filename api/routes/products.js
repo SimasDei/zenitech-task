@@ -17,14 +17,18 @@ router.get('/', (req, res, next) => {
     });
 });
 
-// GET product but ID
+// GET product by ID
 router.get('/:id', (req, res, next) => {
   const id = req.params.id;
   Product.findById(id)
     .exec()
     .then(document => {
       console.log(document);
-      res.status(200).json(document);
+      if (document) {
+        res.status(200).json(document);
+      } else {
+        res.status(404).json({ message: 'Product Not Found.' });
+      }
     })
     .catch(error => {
       res.status(500).json({ error: error });
@@ -52,13 +56,59 @@ router.post('/', (req, res, next) => {
     .save()
     .then(result => {
       console.log(result);
+      res.status(201).json({
+        message: 'Post request to /products',
+        createdProduct: result
+      });
     })
-    .catch(error => console.log(error));
+    .catch(error => {
+      console.log(error);
+      res.status(500).json({ error: error });
+    });
+});
 
-  res.status(201).json({
-    message: 'Post request to /products',
-    createdProduct: product
-  });
+// PATCH, update a product by ID
+router.patch('/:id', (req, res, next) => {
+  const id = req.params.id;
+  const updateData = {
+    title: req.body.title,
+    description: req.body.description,
+    price: req.body.price,
+    stock: req.body.stock,
+    location: {
+      country: req.body.country,
+      city: req.body.city,
+      street: req.body.street,
+      gps: req.body.gps
+    }
+  };
+
+  Product.findByIdAndUpdate(id, {
+    $set: updateData
+  })
+    .exec()
+    .then(result => {
+      console.log(result);
+      res.status(200).json(result);
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).json({ error: error });
+    });
+});
+
+// DELETE a product by ID
+router.delete('/:id', (req, res, next) => {
+  const id = req.params.id;
+  Product.findByIdAndRemove(id)
+    .exec()
+    .then(result => {
+      res.status(200).json(result);
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).json({ error: error });
+    });
 });
 
 module.exports = router;
