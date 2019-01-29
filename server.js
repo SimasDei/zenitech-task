@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const products = require('./routes/api/products.js');
+
 const app = express();
 
 const db = require('./config/config').mongoURI;
@@ -13,6 +15,8 @@ mongoose
   .catch(err => console.log(err));
 
 app.get('/', (req, res, next) => res.send('Ahoy there Sailor o/'));
+
+app.use('/api/products', products);
 
 const port = process.env.PORT || 5000;
 
