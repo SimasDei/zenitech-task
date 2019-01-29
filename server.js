@@ -1,9 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
-const products = require('./routes/api/products.js');
+const morgan = require('morgan');
+const products = require('./api/routes/products.js');
 
 const app = express();
+app.use(morgan('dev'));
 
 const db = require('./config/config').mongoURI;
 mongoose
@@ -14,9 +15,22 @@ mongoose
   .then(() => console.log('Connection to DB Established, Captain! o/'))
   .catch(err => console.log(err));
 
-app.get('/', (req, res, next) => res.send('Ahoy there Sailor o/'));
+app.use('/products', products);
 
-app.use('/api/products', products);
+app.use((req, res, next) => {
+  const error = new Error('Route Not Found');
+  error.status = 404;
+  next(error);
+});
+
+app.use((error, req, res, next) => {
+  res.status(error.status || 500);
+  res.json({
+    error: {
+      message: error.message
+    }
+  });
+});
 
 const port = process.env.PORT || 5000;
 

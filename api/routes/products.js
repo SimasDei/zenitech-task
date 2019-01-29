@@ -4,13 +4,8 @@ const mongoose = require('mongoose');
 
 const Product = require('../../models/Product');
 
-router.get('/test', (req, res) =>
-  res.json({
-    message: 'Products Route seems to be Okay !'
-  })
-);
-
-router.get('/', (req, res) => {
+// GET all Products
+router.get('/', (req, res, next) => {
   Product.find()
     .then(product => {
       if (!product) {
@@ -22,5 +17,7 @@ router.get('/', (req, res) => {
       res.status(404).json({ error: 'Could not  utilize Model or Route' });
     });
 });
+
+// POST a product
 
 module.exports = router;
