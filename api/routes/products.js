@@ -35,6 +35,23 @@ router.get('/:id', (req, res, next) => {
     });
 });
 
+// Get product by search Query
+router.get('/search/:query', (req, res, next) => {
+  const query = req.params.query;
+  Product.find({
+    title: { $regex: query, $options: 'i' }
+  })
+    .then(result => {
+      if (!result) {
+        res.status(404).json({ message: 'No Such Product Found' });
+      }
+      res.status(200).json(result);
+    })
+    .catch(error => {
+      res.status(500).json({ error: error });
+    });
+});
+
 // POST a product
 router.post('/', (req, res, next) => {
   const product = {
